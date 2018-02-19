@@ -1,0 +1,40 @@
+{
+  "name": "component-uds-json",
+  "version": "0.0.1",
+  "description": "A JSON-based User Data Store (UDS) component",
+  "main": "index.js",
+  "scripts": {
+    "test": "istanbul cover _mocha",
+    "docs": "jsdoc -c ./.jsdoc-conf.json"
+  },
+  "keywords": [
+    "storage",
+    "component",
+    "uds"
+  ],
+  "author": "Adam Powers",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/apowers313/component-uds-json"
+  },
+  "bugs": {
+    "url": "https://github.com/apowers313/component-uds-json/issues",
+    "email": "apowers@ato.ms"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "gh-pages": "^0.12.0",
+    "ink-docstrap": "^1.3.0",
+    "istanbul": "^0.4.5",
+    "istanbul-coveralls": "^1.0.3",
+    "jsdoc": "^3.4.3",
+    "mocha": "^2.5.3",
+    "mockery": "^2.0.0",
+    "sinon": "^1.17.6"
+  },
+  "dependencies": {
+    "component-class": "/Users/apowers/Projects/components/component-class",
+    "mkdirp": "^0.5.1"
+  }
+}
