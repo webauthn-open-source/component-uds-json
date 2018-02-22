@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "component-class": "/Users/apowers/Projects/components/component-class",
-    "mkdirp": "^0.5.1"
+    "mkdirp": "^0.5.1",
+    "tingodb": "^0.5.1"
   }
 }

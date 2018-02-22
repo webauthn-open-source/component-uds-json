@@ -1,7 +1,7 @@
 var turnOnDebugLogging = true;
 
-var UdsJsonComponent = require ("../index.js");
-var assert = require ("chai").assert;
+var UdsMongoComponent = require("../index.js");
+var assert = require("chai").assert;
 
 var dummyComponentManager = {
     registerType: function() {},
@@ -23,25 +23,120 @@ var dummyLogger = {
         return new Proxy(function() {}, {
             get: function() {
                 return function(...msg) {
-                    if(turnOnDebugLogging) console.log(...msg);
+                    if (turnOnDebugLogging) console.log(...msg);
                 };
             },
         });
     }
 };
 
-describe ("UdsJsonComponent", function() {
-    var c;
+describe("UdsMongoComponent", function() {
+    var umc;
     beforeEach(function() {
-        c = new UdsJsonComponent(dummyComponentManager);
+        umc = new UdsMongoComponent(dummyComponentManager);
     });
 
     afterEach(function() {
-        c.shutdown();
+        umc.shutdown();
     });
 
     it("can be initialized", function() {
-        var ret = c.init();
+        var ret = umc.init();
         assert.isUndefined(ret);
+    });
+});
+
+describe.only("tingodb", function() {
+    var umc;
+    beforeEach(function() {
+        umc = new UdsMongoComponent(dummyComponentManager);
+    });
+
+    afterEach(function() {
+        return umc.deleteAll({})
+            .then(() => {
+                return umc.shutdown();
+            });
+    });
+
+    it("can init tingodb", function() {
+        umc.tingoInit();
+    });
+
+    it("can create item", function() {
+        umc.tingoInit();
+        var obj = {
+            username: "apowers",
+            userId: "apowers@ato.ms"
+        };
+        var p = umc.create(obj);
+        assert.instanceOf(p, Promise);
+        return p.then((res) => {
+            assert.strictEqual(obj.username, res.username);
+            assert.strictEqual(obj.userId, res.userId);
+        });
+    });
+
+    it("can deleteOne item", function() {
+        umc.tingoInit();
+        var obj = {
+            username: "unique",
+            random: Math.random()
+        };
+        var p = umc.create(obj);
+        assert.instanceOf(p, Promise);
+        return p.then(() => {
+            return umc.deleteOne({
+                username: "unique"
+            });
+        }).then((res) => {
+            assert.strictEqual(res, 1);
+        });
+    });
+
+    it("can createOrUpdate item", function() {
+        umc.tingoInit();
+        var obj = {
+            username: "apowers",
+            userId: "apowers@ato.ms"
+        };
+        var p = umc.createOrUpdate(obj, obj);
+        assert.instanceOf(p, Promise);
+        return p.then((res) => {
+            assert.strictEqual(res, 1);
+        });
+    });
+
+    it("can update item", function() {
+        umc.tingoInit();
+        var obj = {
+            username: "apowers",
+            userId: "apowers@ato.ms"
+        };
+        var p = umc.create(obj);
+        assert.instanceOf(p, Promise);
+        return p.then(() => {
+            return umc.update(obj, obj);
+        }).then((res) => {
+            assert.strictEqual(res, 1);
+        });
+    });
+
+    it("can get item", function() {
+        umc.tingoInit();
+        var obj = {
+            username: "unique",
+            random: Math.random()
+        };
+        var p = umc.create(obj);
+        assert.instanceOf(p, Promise);
+        return p.then(() => {
+            return umc.get({
+                username: "unique"
+            });
+        }).then((res) => {
+            assert.strictEqual(res.username, obj.username);
+            assert.strictEqual(res.random, obj.random);
+        });
     });
 });
