@@ -1,11 +1,11 @@
 var turnOnDebugLogging = true;
 
+var UdsMongoComponent = require("../index.js");
 var {
-    UdsMongoComponent,
     User,
-    Table,
     Credential
-} = require("../index.js");
+} = require("component-user-class");
+var helpers = require("./helpers/helpers");
 var assert = require("chai").assert;
 
 var dummyComponentManager = {
@@ -51,7 +51,7 @@ describe("UdsMongoComponent", function() {
     });
 });
 
-describe("user", function() {
+describe("user data store", function() {
     var umc;
     beforeEach(function() {
         umc = new UdsMongoComponent(dummyComponentManager);
@@ -59,193 +59,14 @@ describe("user", function() {
     });
 
     afterEach(function() {
-        umc.deleteAll("users", {});
-        umc.shutdown();
+        return helpers.dbDeleteAll(umc, "users", {})
+            .then(() => {
+                umc.shutdown();
+            });
     });
 
     it("can get updates");
     it("can get complete object");
-
-    describe("getJournal", function() {
-        it("get object", function() {
-            umc.create("users", {
-                username: "adam", // init
-                child1: "julia", // init
-                child2: "nobody",
-                beer: true,
-                const: true // never updated
-            });
-            return umc.findUsers({
-                    username: "adam"
-                })
-                .then((users) => {
-                    var u = users[0];
-                    // console.log("User", u);
-                    u.set("username", "sara"); // update after init
-                    u.delete("child1"); // delete after set
-                    u.delete("child2"); // delete
-                    u.set("child2", "miles"); // set after delete
-                    u.set("age", 40); // update without init
-                    u.delete("beer"); // delete init
-                    var ret = u.getJournal({
-                        type: "object"
-                    });
-                    assert.isObject(ret);
-                });
-        });
-
-        it("get object with updates only", function() {
-            umc.create("users", {
-                username: "adam", // init
-                child1: "julia", // init
-                child2: "nobody",
-                beer: true,
-                const: true // never updated
-            });
-            return umc.findUsers({
-                    username: "adam"
-                })
-                .then((users) => {
-                    var u = users[0];
-                    // console.log("User", u);
-                    u.set("username", "sara"); // update after init
-                    u.delete("child1"); // delete after set
-                    u.delete("child2"); // delete
-                    u.set("child2", "miles"); // set after delete
-                    u.set("age", 40); // update without init
-                    u.delete("beer"); // delete init
-                    var ret = u.getJournal({
-                        type: "object",
-                        update: true,
-                        delete: false,
-                        init: false
-                    });
-
-                    assert.isObject(ret);
-                    var expected = {
-                        username: "sara",
-                        child2: "miles",
-                        age: 40
-                    };
-                    assert.deepEqual(ret, expected);
-                });
-        });
-
-        it("get object with deletes only", function() {
-            umc.create("users", {
-                username: "adam", // init
-                child1: "julia", // init
-                child2: "nobody",
-                beer: true,
-                const: true // never updated
-            });
-            return umc.findUsers({
-                    username: "adam"
-                })
-                .then((users) => {
-                    var u = users[0];
-                    // console.log("User", u);
-                    u.set("username", "sara"); // update after init
-                    u.delete("child1"); // delete after init
-                    u.delete("child2");
-                    u.set("child2", "miles"); // set after delete
-                    u.set("age", 40); // update without init
-                    u.delete("beer"); // delete init
-                    var ret = u.getJournal({
-                        type: "object",
-                        update: false,
-                        delete: true,
-                        init: false
-                    });
-
-                    assert.isObject(ret);
-                    var expected = {
-                        beer: undefined,
-                        child1: undefined
-                    };
-                    assert.deepEqual(ret, expected);
-                });
-        });
-
-        it("get object with initial values only", function() {
-            umc.create("users", {
-                username: "adam", // init
-                child1: "julia", // init
-                child2: "nobody",
-                beer: true,
-                const: true // never updated
-            });
-            return umc.findUsers({
-                    username: "adam"
-                })
-                .then((users) => {
-                    var u = users[0];
-                    // console.log("User", u);
-                    u.set("username", "sara"); // update after init
-                    u.delete("child1"); // delete after init
-                    u.delete("child2");
-                    u.set("child2", "miles"); // set after delete
-                    u.set("age", 40); // update without init
-                    u.delete("beer"); // delete init
-                    var ret = u.getJournal({
-                        type: "object",
-                        update: false,
-                        delete: false,
-                        init: true
-                    });
-
-                    assert.isObject(ret);
-                    console.log("ret", ret);
-                    var expected = {
-                        const: true // never updated
-                    };
-                    console.log("expected", expected);
-                    assert.deepEqual(ret, expected);
-                });
-        });
-
-        it("get object with updates and deletes only", function() {
-            umc.create("users", {
-                username: "adam", // init
-                child1: "julia", // init
-                child2: "nobody",
-                beer: true,
-                const: true // never updated
-            });
-            return umc.findUsers({
-                    username: "adam"
-                })
-                .then((users) => {
-                    var u = users[0];
-                    // console.log("User", u);
-                    u.set("username", "sara"); // update after init
-                    u.delete("child1"); // delete after init
-                    u.delete("child2");
-                    u.set("child2", "miles"); // set after delete
-                    u.set("age", 40); // update without init
-                    u.delete("beer"); // delete init
-                    var ret = u.getJournal({
-                        type: "object",
-                        update: true,
-                        delete: true,
-                        init: false
-                    });
-
-                    assert.isObject(ret);
-                    var expected = {
-                        username: "sara",
-                        child2: "miles",
-                        age: 40,
-                        beer: undefined,
-                        child1: undefined
-                    };
-                    assert.deepEqual(ret, expected);
-                });
-        });
-
-        it("get map");
-        it("get array");
-    });
 
     describe("createUser", function() {
         it("can create new user", function() {
@@ -273,7 +94,7 @@ describe("user", function() {
             return u.commit()
                 .then((ret) => {
                     assert.strictEqual(ret, 1);
-                    return umc.get("users", {
+                    return helpers.dbGet(umc, "users", {
                         username: "john"
                     });
                 })
@@ -288,7 +109,7 @@ describe("user", function() {
 
     describe("findUsers", function() {
         it("can find and init user", function() {
-            return umc.create("users", {
+            return helpers.dbCreate(umc, "users", {
                     username: "bubba",
                     worked: true
                 })
@@ -379,105 +200,12 @@ describe("credential", function() {
     });
 
     afterEach(function() {
-        umc.deleteAll("users", {});
-        umc.shutdown();
+        return helpers.dbDeleteAll("users", {})
+            .then(() => {
+                umc.shutdown();
+            });
     });
 
     it("can update credential");
     it("can set credential attributes");
-});
-
-describe("tingodb", function() {
-    var umc;
-    beforeEach(function() {
-        umc = new UdsMongoComponent(dummyComponentManager);
-    });
-
-    afterEach(function() {
-        return umc.deleteAll("users", {})
-            .then(() => {
-                return umc.shutdown();
-            });
-    });
-
-    it("can init tingodb", function() {
-        umc.tingoInit();
-    });
-
-    it("can create item", function() {
-        umc.tingoInit();
-        var obj = {
-            username: "apowers",
-            userId: "apowers@ato.ms"
-        };
-        var p = umc.create("users", obj);
-        assert.instanceOf(p, Promise);
-        return p.then((res) => {
-            assert.strictEqual(obj.username, res.username);
-            assert.strictEqual(obj.userId, res.userId);
-        });
-    });
-
-    it("can deleteOne item", function() {
-        umc.tingoInit();
-        var obj = {
-            username: "unique",
-            random: Math.random()
-        };
-        var p = umc.create("users", obj);
-        assert.instanceOf(p, Promise);
-        return p.then(() => {
-            return umc.deleteOne("users", {
-                username: "unique"
-            });
-        }).then((res) => {
-            assert.strictEqual(res, 1);
-        });
-    });
-
-    it("can createOrUpdate item", function() {
-        umc.tingoInit();
-        var obj = {
-            username: "apowers",
-            userId: "apowers@ato.ms"
-        };
-        var p = umc.createOrUpdate("users", obj, obj);
-        assert.instanceOf(p, Promise);
-        return p.then((res) => {
-            assert.strictEqual(res, 1);
-        });
-    });
-
-    it("can update item", function() {
-        umc.tingoInit();
-        var obj = {
-            username: "apowers",
-            userId: "apowers@ato.ms"
-        };
-        var p = umc.create("users", obj);
-        assert.instanceOf(p, Promise);
-        return p.then(() => {
-            return umc.update("users", obj, obj);
-        }).then((res) => {
-            assert.strictEqual(res, 1);
-        });
-    });
-
-    it("can get item", function() {
-        umc.tingoInit();
-        var obj = {
-            username: "unique",
-            random: Math.random()
-        };
-        var p = umc.create("users", obj);
-        assert.instanceOf(p, Promise);
-        return p.then(() => {
-            return umc.get("users", {
-                username: "unique"
-            });
-        }).then((res) => {
-            assert.strictEqual(res.username, obj.username);
-            assert.strictEqual(res.random, obj.random);
-        });
-    });
 });

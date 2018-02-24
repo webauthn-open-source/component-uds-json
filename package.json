@@ -34,8 +34,9 @@
     "sinon": "^1.17.6"
   },
   "dependencies": {
+    "component-user-class": "/Users/apowers/Projects/components/component-user-class",
     "component-class": "/Users/apowers/Projects/components/component-class",
     "mkdirp": "^0.5.1",
-    "tingodb": "^0.5.1"
+    "tingodb": "https://github.com/sergeyksv/tingodb"
   }
 }
