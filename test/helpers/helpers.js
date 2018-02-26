@@ -70,7 +70,10 @@ function dbFind(umc, tableName, selector) {
 
     var collection = umc.database.collection(tableName);
 
-    return promiseCall(collection, "find", selector);
+    return promiseCall(collection, "find", selector)
+        .then((cursor) => {
+            return promiseCall(cursor, "toArray");
+        });
 }
 
 function dbDeleteOne(umc, tableName, selector) {
