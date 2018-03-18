@@ -151,7 +151,7 @@ describe("user data store", function() {
         it("can commit updated user");
     });
 
-    describe("destoryUser", function() {
+    describe("destroyUser", function() {
         it("deletes user", function() {
             return helpers.dbCreate(umc, "users", {
                     username: "adam"
@@ -318,6 +318,7 @@ describe("user data store", function() {
     describe("findCredentials", function() {
         it("can find credentials associated with user");
         it("can create credential associated with user");
+        it("can find credentials using selector");
     });
 
     describe("deleteCredential", function() {
