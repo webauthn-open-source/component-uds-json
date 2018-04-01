@@ -1,6 +1,6 @@
 {
   "name": "component-uds-json",
-  "version": "^1.0.0",
+  "version": "1.0.0",
   "description": "A JSON-based User Data Store (UDS) component",
   "main": "index.js",
   "scripts": {
