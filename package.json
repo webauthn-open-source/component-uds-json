@@ -1,6 +1,6 @@
 {
   "name": "component-uds-json",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A JSON-based User Data Store (UDS) component",
   "main": "index.js",
   "scripts": {
@@ -34,8 +34,8 @@
     "sinon": "^1.17.6"
   },
   "dependencies": {
-    "component-user-class": "^1.0.0",
-    "component-class": "^1.0.0",
+    "component-user-class": "^1.0.1",
+    "component-class": "^2.0.0",
     "mkdirp": "^0.5.1",
     "tingodb": "https://github.com/sergeyksv/tingodb"
   }
