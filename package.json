@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "istanbul cover _mocha",
-    "docs": "jsdoc -c ./.jsdoc-conf.json"
+    "docs": "jsdoc -c ./.jsdoc-conf.json",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "keywords": [
     "storage",
@@ -36,7 +38,10 @@
   "dependencies": {
     "component-user-class": "^1.0.1",
     "component-class": "^2.0.0",
+
     "mkdirp": "^1.0.0",
-    "tingodb": "https://github.com/sergeyksv/tingodb"
-  }
+    "tingodb": "https://github.com/sergeyksv/tingodb",
+    "snyk": "^1.316.1"
+  },
+  "snyk": true
 }
