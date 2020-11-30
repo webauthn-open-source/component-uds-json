@@ -38,7 +38,8 @@
   "dependencies": {
     "component-user-class": "^1.0.1",
     "component-class": "^2.0.0",
-    "mkdirp": "^0.5.1",
+
+    "mkdirp": "^1.0.0",
     "tingodb": "https://github.com/sergeyksv/tingodb",
     "snyk": "^1.316.1"
   },
